@@ -695,13 +695,13 @@ This custom cipher demonstrates fundamental cryptographic concepts by combining 
 
 ---
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## Author
 
-**abinz-25**  
+**Zainab Furqan Ahmed**  
+**Hafsa Imtiaz**  
+**Sheeza Aslam**  
+**Asifa Siraj**  
+
 Network and Information Security Project  
 Course: CT-486
 
