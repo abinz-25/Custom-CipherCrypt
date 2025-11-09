@@ -25,6 +25,7 @@ This project implements a custom cipher that combines two classical encryption t
 *   **`cipher.py`**: Contains the `CustomCipher` class with encryption and decryption methods
 *   **`attack.py`**: Implements frequency analysis and known-plaintext attack methods
 *   **`main.py`**: Interactive user interface for encryption, decryption, and attack simulation
+*   **`ENCRYPTION_FLOW_EXAMPLE.md`**: Complete step-by-step encryption flow example with detailed calculations
 
 ---
 
@@ -119,6 +120,13 @@ C₁[i] = (P[i] + K_v[i mod |K_v|]) mod 26
 C₂ = (K_h × C₁) mod 26
 where K_h is a 3×3 invertible matrix
 ```
+
+### Complete Example
+For a detailed step-by-step example of encrypting "HELLOWORLD" with key "ALGORITHMS", see [ENCRYPTION_FLOW_EXAMPLE.md](ENCRYPTION_FLOW_EXAMPLE.md). This document includes:
+- Complete key derivation and adjustment process
+- All intermediate calculations with numerical values
+- Block-by-block Hill cipher operations
+- Final ciphertext generation: **HELLOWORLD → AKDUPIWHQBFYLE**
 
 ---
 
@@ -281,7 +289,7 @@ The specific order (Vigenère → Hill) is chosen because:
 | Feature | Custom Cipher | AES-256 |
 |---------|--------------|---------|
 | Key Space | ~10^21 (15-char key) | ~10^77 |
-| Block Size | 3 characters | 128 bits |
+| Block Size | 15 bits (3 chars × 5 bits) | 128 bits |
 | Known Attacks | Vulnerable to known-plaintext | No practical attacks |
 | Performance | Fast (O(n)) | Very Fast (hardware accelerated) |
 | Security Level | Educational | Military-grade |
@@ -622,9 +630,11 @@ pip install numpy
 
 ### Installation
 ```bash
-git clone https://github.com/abinz-25/Custom-CipherCrypt.git
-cd Custom-CipherCrypt/custom_cipher
+git clone https://github.com/abinz-25/NIS-CCP.git
+cd NIS-CCP/custom_cipher
 ```
+
+**Note**: If you cloned the repository as `Custom-CipherCrypt`, use that folder name instead of `NIS-CCP`.
 
 ### Usage
 
@@ -717,6 +727,13 @@ This custom cipher demonstrates fundamental cryptographic concepts by combining 
 ✅ **Practical Implementation**: User-friendly interface with input validation  
 
 ⚠️ **Important Note**: This cipher is designed for educational purposes only. For real-world security needs, use modern encryption standards like AES, RSA, or ChaCha20.
+
+---
+
+## Additional Documentation
+
+For more detailed examples and calculations, see:
+- **[ENCRYPTION_FLOW_EXAMPLE.md](ENCRYPTION_FLOW_EXAMPLE.md)**: Complete step-by-step encryption flow with detailed calculations showing how "HELLOWORLD" becomes "AKDUPIWHQBFYLE" using key "ALGORITHMS"
 
 ---
 
