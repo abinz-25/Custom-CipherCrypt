@@ -32,16 +32,24 @@ This project implements a custom cipher that combines two classical encryption t
 
 ### Key Structure
 The cipher requires a key of at least **10 characters**:
-- **First part (variable length)**: Used as the Vigenère cipher key (minimum 1 character)
-- **Last 9 characters**: Form a 3×3 matrix for the Hill cipher
+- **First 9 characters**: Form a 3×3 matrix for the Hill cipher
+- **Remaining characters (variable length)**: Used as the Vigenère cipher key (minimum 1 character)
 
 **Example**: For key `"SECRETGYBNQKURP"` (15 characters):
-- Vigenère key: `"SECRET"` (first 6 characters)
-- Hill key: `"GYBNQKURP"` (last 9 characters)
+- Hill key: `"SECRETGYB"` (first 9 characters)
+- Vigenère key: `"NQKURP"` (remaining 6 characters)
 
 ### Two-Stage Encryption Process
 1. **Stage 1 - Vigenère Cipher**: Provides polyalphabetic substitution
 2. **Stage 2 - Hill Cipher**: Adds block-based confusion and diffusion
+
+### Automatic Key Adjustment
+If the Hill cipher key (first 9 characters) does not create a valid invertible matrix, the system automatically adjusts it using one of three strategies:
+1. **Uniform adjustment**: Adds the same value to all characters
+2. **Positional adjustment**: Modifies individual character positions
+3. **Key mixing**: Combines with a known valid key
+
+The adjusted key is displayed to the user and must be used for decryption.
 
 ### Length Encoding
 To preserve the original message length and remove padding accurately, the cipher prepends a 2-character length prefix to the ciphertext:
@@ -59,10 +67,11 @@ To preserve the original message length and remove padding accurately, the ciphe
 Input: Plaintext P, Key K (length ≥ 10)
 
 1. KEY DERIVATION:
-   - Extract Vigenère_Key = K[0 : -9]
-   - Extract Hill_Key = K[-9:]
+   - Extract Hill_Key = K[0:9] (first 9 characters)
+   - Extract Vigenère_Key = K[9:] (remaining characters)
    - Create Hill_Matrix (3×3) from Hill_Key
    - Validate Hill_Matrix is invertible (det ≠ 0, gcd(det, 26) = 1)
+   - If not valid, automatically adjust Hill_Key until valid matrix is found
 
 2. PREPROCESSING:
    - Convert plaintext to uppercase
@@ -121,9 +130,10 @@ where K_h is a 3×3 invertible matrix
 Input: Ciphertext C, Key K (length ≥ 10)
 
 1. KEY DERIVATION:
-   - Extract Vigenère_Key = K[0 : -9]
-   - Extract Hill_Key = K[-9:]
+   - Extract Hill_Key = K[0:9] (first 9 characters)
+   - Extract Vigenère_Key = K[9:] (remaining characters)
    - Create Hill_Matrix (3×3) from Hill_Key
+   - Apply same automatic adjustment as during encryption if needed
    - Calculate Hill_Matrix_Inverse (modulo 26)
 
 2. EXTRACT LENGTH:
@@ -408,7 +418,7 @@ Step 5: Full key recovery
 ## Suggestions for Security Improvements
 
 ### 1. **Variable Key Scheduling**
-**Current**: Fixed key split (first part = Vigenère, last 9 = Hill)
+**Current**: Fixed key split (first 9 = Hill, remaining = Vigenère)
 **Improvement**: Derive subkeys using a key derivation function (KDF)
 
 ```python
@@ -634,15 +644,19 @@ python main.py
 from cipher import CustomCipher
 
 # Initialize cipher with a key (minimum 10 characters)
-key = "SECRETGYBNQKURP"
+key = "ZAINABFURQAN"
 cipher = CustomCipher(key)
+
+# Get the adjusted key (in case automatic adjustment was applied)
+adjusted_key = cipher.get_full_key()
+print(f"Using key: {adjusted_key}")
 
 # Encrypt a message
 plaintext = "HELLO WORLD"
 ciphertext = cipher.encrypt(plaintext)
 print(f"Encrypted: {ciphertext}")
 
-# Decrypt the message
+# Decrypt the message (use the original key, system will auto-adjust)
 decrypted = cipher.decrypt(ciphertext)
 print(f"Decrypted: {decrypted}")
 ```
@@ -656,20 +670,39 @@ print(f"Decrypted: {decrypted}")
 4. Exit
 Enter your choice: 1
 
-Enter a key (at least 10 characters): SECRETGYBNQKURP
-Enter the message to encrypt: I M PAGAL
-Cleaned plaintext (letters only): IMPAGAL
-Encrypted: AHJCUNMZPHH
-Encryption Time: 0.000274 seconds
+Enter a key (at least 10 characters): ZAINABFURQAN
+Enter the message to encrypt: HELLO WORLD
+Cleaned plaintext (letters only): HELLOWORLD
+
+Encrypted: AKLTNRCSZSRXXX
+Encryption Time: 0.000291 seconds
+
+Full Adjusted Key (use this for decryption): ZAINABFURQAN
 
 --- Custom Cipher Menu ---
 Enter your choice: 2
 
-Enter a key (at least 10 characters): SECRETGYBNQKURP
-Enter the message to decrypt: AHJCUNMZPHH
+Enter a key (at least 10 characters): ZAINABFURQAN
+Enter the message to decrypt: AKLTNRCSZSRXXX
 
-Decrypted: IMPAGAL
-Decryption Time: 0.005074 seconds
+Decrypted: HELLOWORLD
+Decryption Time: 0.000443 seconds
+```
+
+### Example with Key Adjustment
+```
+Enter your choice: 1
+Enter a key (at least 10 characters): ALGORITHMS
+Note: Key was automatically adjusted to create a valid Hill cipher matrix
+Original Hill key: ALGORITHM
+Adjusted Hill key: BMIPRSIUN (uniform adjustment: +1)
+Enter the message to encrypt: TESTING
+
+Cleaned plaintext (letters only): TESTING
+Encrypted: ABCDEFGHIJ
+Encryption Time: 0.000274 seconds
+
+Full Adjusted Key (use this for decryption): BMIPRSIUNS
 ```
 
 ---

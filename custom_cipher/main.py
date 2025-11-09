@@ -30,8 +30,9 @@ def main():
                 encrypted_message = cipher.encrypt(plaintext_cleaned)
                 encryption_time = time.time() - start_time
                 
-                print(f"Encrypted: {encrypted_message}")
+                print(f"\nEncrypted: {encrypted_message}")
                 print(f"Encryption Time: {encryption_time:.6f} seconds")
+                print(f"\nFull Adjusted Key (use this for decryption): {cipher.get_full_key()}")
             except ValueError as e:
                 print(f"Error: {e}")
 

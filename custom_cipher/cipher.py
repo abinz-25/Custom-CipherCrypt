@@ -1,40 +1,93 @@
 import numpy as np
+import math
 
 class CustomCipher:
     def __init__(self, key):
         if len(key) < 10:
-            raise ValueError("Key must be at least 10 characters long to support a Vigenere key and a 3x3 Hill cipher key.")
+            raise ValueError("Key must be at least 10 characters long.")
         
-        # The last 9 characters form the Hill key
-        self.hill_key_str = key[-9:]
+        self.original_key = key
+        
+        # The first 9 characters form the Hill key
+        self.hill_key_str = key[:9]
         # The rest of the key forms the Vigenere key
-        self.vigenere_key = key[:-9]
+        self.vigenere_key = key[9:]
 
-        if not self.vigenere_key:
-             raise ValueError("Vigenere key part cannot be empty.")
-
-        self.hill_key_matrix = self._create_hill_key_matrix(self.hill_key_str)
-
-    def _create_hill_key_matrix(self, key_str):
+        # Try to create a valid Hill key matrix, adjust if necessary
+        self.hill_key_matrix, self.adjusted_hill_key = self._create_valid_hill_key_matrix(self.hill_key_str)
+    
+    def get_full_key(self):
+        """Returns the full key being used (Vigenere + Hill parts)"""
+        return self.adjusted_hill_key + self.vigenere_key
+    
+    def _create_valid_hill_key_matrix(self, key_str):
+        """Try to create a valid Hill matrix, adjusting the key if necessary"""
+        original_key_str = key_str
         key_str = key_str.upper().replace("J", "I")
         key_num = [ord(c) - ord('A') for c in key_str]
         
-        # Ensure the key is 9 characters long for a 3x3 matrix
         if len(key_num) != 9:
-            raise ValueError("Hill cipher key part must be 9 characters long.")
-
+            raise ValueError("Internal error: Hill cipher requires exactly 9 characters. Please ensure your key is at least 10 characters long.")
+        
+        # Try the original key first
         matrix = np.array(key_num).reshape(3, 3)
-        
-        # Check if the matrix is invertible
         det = int(round(np.linalg.det(matrix))) % 26
-        if det == 0:
-            raise ValueError("Hill cipher key matrix is not invertible (determinant is 0).")
         
-        import math
-        if math.gcd(det, 26) != 1:
-            raise ValueError(f"Determinant ({det}) of Hill cipher key matrix is not coprime with 26, so it's not invertible modulo 26.")
+        if det != 0 and math.gcd(det, 26) == 1:
+            # Key is already valid, no adjustment needed (no message printed)
+            return matrix, key_str
         
-        return matrix
+        # Strategy 1: Try adjusting all elements uniformly
+        for adjustment in range(1, 26):
+            adjusted_key_num = [(num + adjustment) % 26 for num in key_num]
+            matrix = np.array(adjusted_key_num).reshape(3, 3)
+            det = int(round(np.linalg.det(matrix))) % 26
+            
+            if det != 0 and math.gcd(det, 26) == 1:
+                adjusted_key_str = ''.join([chr(num + ord('A')) for num in adjusted_key_num])
+                print(f"Note: Key was automatically adjusted to create a valid Hill cipher matrix")
+                print(f"Original Hill key: {key_str}")
+                print(f"Adjusted Hill key: {adjusted_key_str} (uniform adjustment: +{adjustment})")
+                return matrix, adjusted_key_str
+        
+        # Strategy 2: Try adjusting only specific positions
+        for i in range(9):
+            for adjustment in range(1, 26):
+                adjusted_key_num = key_num.copy()
+                adjusted_key_num[i] = (adjusted_key_num[i] + adjustment) % 26
+                matrix = np.array(adjusted_key_num).reshape(3, 3)
+                det = int(round(np.linalg.det(matrix))) % 26
+                
+                if det != 0 and math.gcd(det, 26) == 1:
+                    adjusted_key_str = ''.join([chr(num + ord('A')) for num in adjusted_key_num])
+                    print(f"Note: Key was automatically adjusted to create a valid Hill cipher matrix")
+                    print(f"Original Hill key: {key_str}")
+                    print(f"Adjusted Hill key: {adjusted_key_str} (position {i} adjusted by +{adjustment})")
+                    return matrix, adjusted_key_str
+        
+        # Strategy 3: Use a known good matrix and mix it with the key
+        # GYBNQKURP is known to work, use it as fallback
+        fallback = "GYBNQKURP"
+        fallback_num = [ord(c) - ord('A') for c in fallback]
+        
+        # Mix original key with fallback
+        mixed_key_num = [(key_num[i] + fallback_num[i]) % 26 for i in range(9)]
+        matrix = np.array(mixed_key_num).reshape(3, 3)
+        det = int(round(np.linalg.det(matrix))) % 26
+        
+        if det != 0 and math.gcd(det, 26) == 1:
+            mixed_key_str = ''.join([chr(num + ord('A')) for num in mixed_key_num])
+            print(f"Note: Key was combined with a base matrix to create a valid Hill cipher matrix")
+            print(f"Original Hill key: {key_str}")
+            print(f"Final Hill key: {mixed_key_str}")
+            return matrix, mixed_key_str
+        
+        # If all else fails, use the fallback matrix but inform the user
+        matrix = np.array(fallback_num).reshape(3, 3)
+        print(f"Warning: Could not create a valid matrix from your key. Using a default secure matrix instead.")
+        print(f"Original Hill key: {key_str}")
+        print(f"Final Hill key: {fallback}")
+        return matrix, fallback
 
     def _vigenere_encrypt(self, text):
         text = text.upper().replace("J", "I")
