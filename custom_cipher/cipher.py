@@ -116,7 +116,8 @@ class CustomCipher:
         return decrypted
 
     def _hill_encrypt(self, text, original_length=None):
-        text = text.upper().replace("J", "I")
+        text = text.upper()
+        # Do NOT replace J with I here - preprocessing already done in Vigenere stage
         text_num = [ord(c) - ord('A') for c in text if 'A' <= c <= 'Z']
         
         # Pad the text if necessary

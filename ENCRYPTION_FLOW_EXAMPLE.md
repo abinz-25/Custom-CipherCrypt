@@ -1,5 +1,5 @@
 # Complete Encryption Flow Example
-## Step-by-Step Implementation: HELLOWORLD → AKDUPIWHFKYYLE
+## Step-by-Step Implementation: HELLOWORLD → AKDUPIWHQBFYLE
 
 ---
 
@@ -157,9 +157,11 @@ Apply Caesar shift of 18 to each character:
 ### 3.3 Vigenère Result
 
 ```
-Input:  HELLOWORLD
+Input:  HELLOWORLD (10 characters)
 Output: ZWDDGOGJDV (10 characters)
 ```
+
+**Verification**: This matches the actual code output ✓
 
 ---
 
@@ -301,12 +303,12 @@ Row 3: 19×6 + 7×9 + 12×3 = 114 + 63 + 36 = 213
 Apply modulo 26:
 
 ```
-120 mod 26 = 16 → F
-261 mod 26 = 1  → K
-213 mod 26 = 5  → Y
+120 mod 26 = 16 → Q
+261 mod 26 = 1  → B
+213 mod 26 = 5  → F
 ```
 
-**Result**: `FKY`
+**Result**: `QBF`
 
 #### **Block 4: VXX [21, 23, 23]**
 
@@ -341,10 +343,10 @@ Apply modulo 26:
 ```
 Block 1: DUP
 Block 2: IWH
-Block 3: FKY
+Block 3: QBF
 Block 4: YLE
 
-Hill Encrypted Result: DUPIWHFKYYLE (12 characters)
+Hill Encrypted Result: DUPIWHQBFYLE (12 characters)
 ```
 
 ---
@@ -383,9 +385,9 @@ Length = (ord('A') - ord('A')) × 26 + (ord('K') - ord('A'))
 
 ```
 Length Prefix:    AK           (2 characters)
-Hill Encrypted:   DUPIWHFKYYLE (12 characters)
+Hill Encrypted:   DUPIWHQBFYLE (12 characters)
 
-Final Ciphertext: AKDUPIWHFKYYLE (14 characters)
+Final Ciphertext: AKDUPIWHQBFYLE (14 characters)
 ```
 
 ---
@@ -432,8 +434,8 @@ Plaintext: HELLOWORLD (10 chars)
 │ STEP 6: HILL ENCRYPTION                                       │
 │ Matrix: ALHORITHM (3×3)                                       │
 │ Blocks: ZWD|DGO|GJD|VXX                                       │
-│ Result: DUP|IWH|FKY|YLE                                       │
-│ ZWDDGOGJDVXX → DUPIWHFKYYLE (12 chars)                       │
+│ Result: DUP|IWH|QBF|YLE                                       │
+│ ZWDDGOGJDVXX → DUPIWHQBFYLE (12 chars)                       │
 └───────────────────────────────────────────────────────────────┘
                     ↓
 ┌───────────────────────────────────────────────────────────────┐
@@ -443,10 +445,10 @@ Plaintext: HELLOWORLD (10 chars)
                     ↓
 ┌───────────────────────────────────────────────────────────────┐
 │ STEP 8: FINAL ASSEMBLY                                        │
-│ AK + DUPIWHFKYYLE = AKDUPIWHFKYYLE (14 chars)                │
+│ AK + DUPIWHQBFYLE = AKDUPIWHQBFYLE (14 chars)                │
 └───────────────────────────────────────────────────────────────┘
                     ↓
-OUTPUT: AKDUPIWHFKYYLE
+OUTPUT: AKDUPIWHQBFYLE
 ```
 
 ---
@@ -458,8 +460,8 @@ OUTPUT: AKDUPIWHFKYYLE
 | Original Plaintext | HELLOWORLD | 10 | - |
 | After Vigenère | ZWDDGOGJDV | 10 | +0 |
 | After Padding | ZWDDGOGJDVXX | 12 | +2 |
-| After Hill | DUPIWHFKYYLE | 12 | +0 |
-| With Length Prefix | AKDUPIWHFKYYLE | 14 | +2 |
+| After Hill | DUPIWHQBFYLE | 12 | +0 |
+| With Length Prefix | AKDUPIWHQBFYLE | 14 | +2 |
 | **Total Change** | - | - | **+4** |
 
 ---
@@ -475,20 +477,20 @@ OUTPUT: AKDUPIWHFKYYLE
 | **Original Plaintext** | HELLOWORLD (10 chars) |
 | **After Vigenère** | ZWDDGOGJDV (10 chars) |
 | **After Padding** | ZWDDGOGJDVXX (12 chars) |
-| **After Hill** | DUPIWHFKYYLE (12 chars) |
+| **After Hill** | DUPIWHQBFYLE (12 chars) |
 | **Length Prefix** | AK (2 chars) |
-| **Final Ciphertext** | AKDUPIWHFKYYLE (14 chars) |
+| **Final Ciphertext** | AKDUPIWHQBFYLE (14 chars) |
 | **Size Increase** | +4 characters |
 
 ---
 
 ## DECRYPTION PROCESS (REVERSE)
 
-To decrypt `AKDUPIWHFKYYLE` back to `HELLOWORLD`:
+To decrypt `AKDUPIWHQBFYLE` back to `HELLOWORLD`:
 
 1. **Extract Length Prefix**: AK → original length = 10
-2. **Remove Prefix**: DUPIWHFKYYLE
-3. **Hill Decryption**: DUPIWHFKYYLE → ZWDDGOGJDVXX (using inverse matrix)
+2. **Remove Prefix**: DUPIWHQBFYLE
+3. **Hill Decryption**: DUPIWHQBFYLE → ZWDDGOGJDVXX (using inverse matrix)
 4. **Remove Padding**: ZWDDGOGJDVXX → ZWDDGOGJDV (keep first 10 chars)
 5. **Vigenère Decryption**: ZWDDGOGJDV → HELLOWORLD (subtract shift of 18)
 
