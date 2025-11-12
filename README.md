@@ -77,7 +77,6 @@ Input: Plaintext P, Key K (length ≥ 10)
 
 2. PREPROCESSING:
    - Convert plaintext to uppercase
-   - Replace 'J' with 'I' (reduce to 25-letter alphabet)
    - Remove non-alphabetic characters
 
 3. VIGENÈRE ENCRYPTION:
@@ -273,7 +272,6 @@ The specific order (Vigenère → Hill) is chosen because:
 
 #### 3. **Alphabet Limitation**
 - Only handles A-Z (26 letters)
-- 'J' is replaced with 'I', reducing alphabet diversity
 - No support for numbers, punctuation, or special characters
 
 #### 4. **Padding Information Leakage**
